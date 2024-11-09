@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'create_acount.dart';
+import 'create_account.dart';
+import 'home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -138,7 +139,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
+                        },
                   ),
                 ),
               ),
@@ -151,11 +157,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   alignment: Alignment.center,
                   child: TextButton(
                     onPressed: () {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateAccount()),
+                        );
                     },
                     child: const Text(
                       "Crie sua Conta",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.black,  
                         fontWeight: FontWeight.w600,
                       ),
                     ),
