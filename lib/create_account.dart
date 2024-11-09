@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class CreateAccountPage extends StatefulWidget {
-  const CreateAccountPage({super.key});
+class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
 
   @override
-  _CreateAccountPageState createState() => _CreateAccountPageState();
+  _CreateAccountState createState() => _CreateAccountState();
 }
 
-class _CreateAccountPageState extends State<CreateAccountPage>
+class _CreateAccountState extends State<CreateAccount>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
@@ -105,18 +105,86 @@ class _CreateAccountPageState extends State<CreateAccountPage>
                         ),
                       ),
                     ),
+                                        const SizedBox(height: 20),
+                    AnimatedOpacity(
+                      opacity: _isVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: CupertinoTextField(
+                        padding: const EdgeInsets.all(15),
+                        placeholder: "Telefone",
+                        placeholderStyle: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 246, 210, 103),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedOpacity(
+                      opacity: _isVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: CupertinoTextField(
+                        padding: const EdgeInsets.all(15),
+                        placeholder: "Cidade",
+                        placeholderStyle: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 246, 210, 103),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AnimatedOpacity(
+                      opacity: _isVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: CupertinoTextField(
+                        padding: const EdgeInsets.all(15),
+                        placeholder: "Descrição",
+                        placeholderStyle: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.black, 
+                          fontSize: 14,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 246, 210, 103),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: (
+                      ) {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2ECC71),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
+                          
                         ),
                       ),
-                      child: const Text("Criar Conta"),
+                      child: const Text(
+                        "Criar Conta",
+                        style: TextStyle(
+                          color: Colors.black, ),),
                     ),
                   ],
                 ),

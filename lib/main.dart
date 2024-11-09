@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'create_acount.dart';
-// import 'login_page.dart';
+import 'create_account.dart';
+import 'login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const CreateAccountPage(),
+      home: const LoginPage()
     );
   }
 }
