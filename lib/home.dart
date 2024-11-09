@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               onTap: () {
                 // Ação ao clicar na foto de perfil
               },
-              child: CircleAvatar(
+              child: const CircleAvatar(
                 backgroundImage: AssetImage('assets/profile.jpg'), // Imagem de perfil
                 radius: 20,
               ),
