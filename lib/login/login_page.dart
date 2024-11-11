@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'create_account.dart';
-import 'home.dart';
+import '../home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,7 +10,8 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   bool _isVisible = false;
@@ -23,7 +24,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       vsync: this,
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+    _slideAnimation = Tween<Offset>(
+            begin: const Offset(0, 0.5), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
@@ -80,7 +82,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 child: CupertinoTextField(
                   padding: const EdgeInsets.all(15),
                   placeholder: "Digite o seu email",
-                  placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                  placeholderStyle:
+                      const TextStyle(color: Colors.black, fontSize: 14),
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
@@ -88,7 +91,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
@@ -97,7 +99,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   padding: const EdgeInsets.all(15),
                   placeholder: "Digite a sua senha",
                   obscureText: true,
-                  placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                  placeholderStyle:
+                      const TextStyle(color: Colors.black, fontSize: 14),
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
@@ -105,7 +108,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
               Align(
                 alignment: Alignment.center,
@@ -116,12 +118,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     onPressed: () {},
                     child: const Text(
                       "Esqueceu sua senha?",
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600,),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
@@ -140,15 +144,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
                       );
-                        },
+                    },
                   ),
                 ),
               ),
-              
               const SizedBox(height: 7),
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
@@ -157,15 +161,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   alignment: Alignment.center,
                   child: TextButton(
                     onPressed: () {
-                        Navigator.push(
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CreateAccount()),
-                        );
+                        MaterialPageRoute(
+                            builder: (context) => CreateAccount()),
+                      );
                     },
                     child: const Text(
                       "Crie sua Conta",
                       style: TextStyle(
-                        color: Colors.black,  
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

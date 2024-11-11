@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'perfil.dart';
+import 'package:google_fonts/google_fonts.dart'; // Importação do Google Fonts
+import 'perfil/perfil.dart';
 import 'package:flutter/services.dart';
-
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -189,23 +188,28 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  // Função para construir o AppBar
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      title: Center(
-        child: Image.asset(
-          'assets/images/logo.png',
-          height: 40,
+ AppBar _buildAppBar() {
+  return AppBar(
+    backgroundColor: Colors.white,
+    elevation: 0,
+    title: Row(
+      children: [
+        Text(
+          'Sweet Home',
+          style: GoogleFonts.lobster(
+            textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+            ),
+          ),
         ),
-      ),
+      ],
+    ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: GestureDetector(
             onTap: () {
-              // Navegação para a página de perfil ao clicar na imagem
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => PerfilPage()),
@@ -330,7 +334,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 }
 
-// Página de chat
 class ChatPage extends StatelessWidget {
   final String ownerName;
 
