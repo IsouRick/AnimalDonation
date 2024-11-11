@@ -3,18 +3,21 @@ import 'login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:async';
+import 'home.dart'; // Importando o HomePage
+import 'create_post.dart'; // Importando o CreatePostPage
+import 'package:firebase_database/firebase_database.dart';
 
+final databaseRef = FirebaseDatabase.instance.refFromURL('https://sweet-1a3e7-default-rtdb.firebaseio.com');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Executa o app dentro de uma zona protegida para capturar erros globais
+  // Inicializando o Firebase
   await runZonedGuarded(() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     runApp(const MyApp());
   }, (error, stackTrace) {
-    // Captura e loga erros globais que ocorrerem na zona
     print('Erro capturado: $error');
     print(stackTrace);
   });
@@ -32,7 +35,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      // Definindo as rotas para navegação
+      routes: {
+        '/': (context) => const HomePage(), // Rota principal (HomePage)
+        '/create-post': (context) => const CreatePostPage(), // Rota para criar post
+      },
     );
   }
-} 
+}

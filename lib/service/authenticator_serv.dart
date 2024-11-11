@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AuthenticatorServ {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref();
 
   Future<String> createUser({
     required String nome,
@@ -15,10 +17,18 @@ class AuthenticatorServ {
         password: senha,
       );
 
-      // O usuário foi criado com sucesso, então podemos retornar um sucesso
+      // Obter o ID do usuário criado
+      String userId = userCredential.user!.uid;
+
+      // Criar perfil do usuário no Realtime Database
+      await _databaseRef.child('users').child(userId).set({
+        'username': nome,
+        'email': email,
+        'profilePictureUrl': '', // Deixe vazio ou preencha com uma URL padrão
+      });
+
       return "Usuário criado com sucesso!";
     } on FirebaseAuthException catch (e) {
-      // Aqui estamos capturando os erros específicos do Firebase
       if (e.code == 'weak-password') {
         return 'A senha fornecida é fraca.';
       } else if (e.code == 'email-already-in-use') {
@@ -29,7 +39,6 @@ class AuthenticatorServ {
         return 'Erro desconhecido: ${e.message}';
       }
     } catch (e) {
-      // Qualquer outro erro não relacionado ao Firebase
       return 'Erro ao criar a conta: $e';
     }
   }

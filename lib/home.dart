@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,131 +9,173 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
-  bool _isVisible = false;
+class _HomePageState extends State<HomePage> {
+  final List<Map<String, dynamic>> feedItems = [];
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-
-    _controller.forward();
-    _showComponentsWithDelay();
+    _fetchPosts();
   }
 
-  void _showComponentsWithDelay() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() {
-      _isVisible = true;
-    });
+  // Função para buscar posts do Firebase
+  Future<void> _fetchPosts() async {
+    final databaseReference = FirebaseDatabase.instance.ref('posts');
+    final snapshot = await databaseReference.get();
+
+    if (snapshot.exists) {
+      setState(() {
+        feedItems.clear();
+        Map<dynamic, dynamic> posts = snapshot.value as Map<dynamic, dynamic>;
+        posts.forEach((key, value) {
+          feedItems.add({
+            'id': key,
+            'imageUrl': value['imageUrl'],
+            'description': value['description'],
+            'userId': value['userId'],
+            'likes': value['likes'] ?? [],
+          });
+        });
+      });
+    } else {
+      print('No posts found');
+    }
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _likePost(int index) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Faça login para curtir!')),
+      );
+      return;
+    }
+
+    final postId = feedItems[index]['id'];
+    final postRef = FirebaseDatabase.instance.ref('posts/$postId');
+
+    final snapshot = await postRef.get();
+    if (snapshot.exists) {
+      final post = snapshot.value as Map<dynamic, dynamic>;
+      final likes = List<String>.from(post['likes'] ?? []);
+
+      // Se o usuário já curtiu, não faz nada
+      if (likes.contains(userId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Você já curtiu esse post!')),
+        );
+        return;
+      }
+
+      // Adiciona o ID do usuário à lista de likes
+      likes.add(userId);
+      await postRef.update({'likes': likes});
+
+      setState(() {
+        feedItems[index]['likes'] = likes;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Ação ao clicar no menu hambúrguer
-          },
-        ),
-        title: Center(
-          child: Image.asset(
-            'assets/logo.png', // Caminho da logo no centro
-            height: 40,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: () {
-                // Ação ao clicar na foto de perfil
-              },
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('assets/profile.jpg'), // Imagem de perfil
-                radius: 20,
-              ),
-            ),
-          ),
-        ],
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navegar para a página de criação de posts
+          Navigator.pushNamed(context, '/create-post');
+        },
+        child: const Icon(Icons.add),
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.all(27),
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 30),
-              FadeTransition(
-                opacity: _controller,
-                child: const Text(
-                  "Bem-vindo à Home!",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+    );
+  }
+
+  Widget _buildBody() {
+    return ListView.builder(
+      itemCount: feedItems.length,
+      itemBuilder: (context, index) {
+        final item = feedItems[index];
+        return _buildFeedItem(item, index);
+      },
+    );
+  }
+
+  Widget _buildFeedItem(Map<String, dynamic> item, int index) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  item['description'],
+                  style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              AnimatedOpacity(
-                opacity: _isVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 500),
-                child: const Text(
-                  "Este é o conteúdo da Home Page.",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 20),
-              AnimatedOpacity(
-                opacity: _isVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 1000),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: CupertinoButton(
-                    padding: const EdgeInsets.all(17),
-                    color: const Color(0xFF2ECC71),
-                    child: const Text(
-                      "Logout",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // Volta para a tela de login
-                    },
-                  ),
-                ),
-              ),
-            ],
+                const Spacer(),
+              ],
+            ),
           ),
-        ),
+          Image.network(
+            item['imageUrl'],
+            height: 300,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  '${item['likes'].length} curtidas',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.favorite_border),
+                  color: Colors.red,
+                  onPressed: () => _likePost(index),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  color: Colors.blue,
+                  onPressed: () {
+                    // Lógica para o chat
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share),
+                  onPressed: () {
+                    // Lógica para compartilhar
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

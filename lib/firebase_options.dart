@@ -6,14 +6,6 @@ import 'package:flutter/foundation.dart'
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -50,6 +42,7 @@ class DefaultFirebaseOptions {
     projectId: 'sweet-1a3e7',
     authDomain: 'sweet-1a3e7.firebaseapp.com',
     storageBucket: 'sweet-1a3e7.firebasestorage.app',
+    databaseURL: 'https://sweet-1a3e7-default-rtdb.firebaseio.com', // Adicionando o databaseURL
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -58,6 +51,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '680756440227',
     projectId: 'sweet-1a3e7',
     storageBucket: 'sweet-1a3e7.firebasestorage.app',
+    databaseURL: 'https://sweet-1a3e7-default-rtdb.firebaseio.com', // Adicionando o databaseURL
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -67,6 +61,7 @@ class DefaultFirebaseOptions {
     projectId: 'sweet-1a3e7',
     storageBucket: 'sweet-1a3e7.firebasestorage.app',
     iosBundleId: 'com.example.doacaoAnimal',
+    databaseURL: 'https://sweet-1a3e7-default-rtdb.firebaseio.com', // Adicionando o databaseURL
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -76,5 +71,6 @@ class DefaultFirebaseOptions {
     projectId: 'sweet-1a3e7',
     authDomain: 'sweet-1a3e7.firebaseapp.com',
     storageBucket: 'sweet-1a3e7.firebasestorage.app',
+    databaseURL: 'https://sweet-1a3e7-default-rtdb.firebaseio.com', // Adicionando o databaseURL
   );
 }
