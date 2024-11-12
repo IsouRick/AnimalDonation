@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'login_page.dart'; // Certifique-se de importar sua página de login
+import 'edit_post_page.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,33 +17,52 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchPosts();
+    // Verificando login do usuário após o primeiro ciclo de build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLoginStatus();
+    });
   }
 
-  // Função para buscar posts do Firebase
-  Future<void> _fetchPosts() async {
-    final databaseReference = FirebaseDatabase.instance.ref('posts');
-    final snapshot = await databaseReference.get();
-
-    if (snapshot.exists) {
-      setState(() {
-        feedItems.clear();
-        Map<dynamic, dynamic> posts = snapshot.value as Map<dynamic, dynamic>;
-        posts.forEach((key, value) {
-          feedItems.add({
-            'id': key,
-            'imageUrl': value['imageUrl'],
-            'description': value['description'],
-            'userId': value['userId'],
-            'likes': value['likes'] ?? [],
-          });
-        });
-      });
+  // Verifica o status de login do usuário
+  void _checkLoginStatus() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // Usuário não está logado, redireciona para a página de login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
     } else {
-      print('No posts found');
+      // Se estiver logado, escuta os posts em tempo real
+      _listenForPosts();
     }
   }
 
+  // Escuta os posts em tempo real
+  void _listenForPosts() {
+    final databaseReference = FirebaseDatabase.instance.ref('posts');
+    databaseReference.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        setState(() {
+          feedItems.clear();
+          Map<dynamic, dynamic> posts =
+              event.snapshot.value as Map<dynamic, dynamic>;
+
+          posts.forEach((key, value) {
+            feedItems.add({
+              'id': key,
+              'imageUrl': value['imageUrl'],
+              'description': value['description'],
+              'userId': value['userId'],
+              'likes': value['likes'] ?? [],
+            });
+          });
+        });
+      }
+    });
+  }
+
+  // Função para curtir o post
   void _likePost(int index) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -60,7 +81,6 @@ class _HomePageState extends State<HomePage> {
       final post = snapshot.value as Map<dynamic, dynamic>;
       final likes = List<String>.from(post['likes'] ?? []);
 
-      // Se o usuário já curtiu, não faz nada
       if (likes.contains(userId)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Você já curtiu esse post!')),
@@ -68,13 +88,28 @@ class _HomePageState extends State<HomePage> {
         return;
       }
 
-      // Adiciona o ID do usuário à lista de likes
       likes.add(userId);
       await postRef.update({'likes': likes});
 
       setState(() {
         feedItems[index]['likes'] = likes;
       });
+    }
+  }
+
+  // Função para obter o nome de usuário
+  // Função para obter o nome de usuário
+  Future<String> _getUserName(String userId) async {
+    final userRef = FirebaseDatabase.instance.ref('users/$userId');
+    final snapshot = await userRef.get();
+    if (snapshot.exists) {
+      // Acessando o 'username' a partir do banco de dados
+      var username = (snapshot.value as Map<dynamic, dynamic>)['username'];
+      return username != null && username is String
+          ? username
+          : 'Usuário desconhecido';
+    } else {
+      return 'Usuário desconhecido';
     }
   }
 
@@ -110,73 +145,147 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Exibe o item do feed
   Widget _buildFeedItem(Map<String, dynamic> item, int index) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      elevation: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text(
-                  item['description'],
+    return FutureBuilder<String>(
+      future: _getUserName(item['userId']), // Obter o nome do usuário
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final userName = snapshot.data ?? 'Usuário desconhecido';
+        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+        // Verifica se o usuário atual é o dono do post
+        final isOwner = currentUserId == item['userId'];
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          elevation: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Exibindo o nome do usuário no topo da postagem
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  userName, // Aqui exibe o nome do usuário
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              // Exibe a imagem
+              if (item['imageUrl'] != null && item['imageUrl'].isNotEmpty)
+                Image.network(
+                  item['imageUrl'],
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.image, size: 150);
+                  },
+                )
+              else
+                const Icon(Icons.image), // Ícone caso a imagem não exista
+              // Exibe a descrição abaixo da imagem
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  item['description'] ?? 'Descrição não disponível',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Spacer(),
-              ],
-            ),
-          ),
-          Image.network(
-            item['imageUrl'],
-            height: 300,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Text(
-                  '${item['likes'].length} curtidas',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              // Exibe o número de curtidas
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      '${item['likes'].length} curtidas',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              // Ícones para interações (curtir e comentar)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.favorite_border),
+                      color: Colors.red,
+                      onPressed: () => _likePost(index),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.chat_bubble_outline),
+                      color: Colors.blue,
+                      onPressed: () {
+                        // Lógica para o chat
+                      },
+                    ),
+                    // Condicional para exibir as opções de editar e deletar
+                    if (isOwner) ...[
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          // Navega para a página de edição, passando os dados do post
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditPostPage(
+                                postId: item['id'], // ID do post
+                                currentDescription: item['description'] ??
+                                    '', // Descrição atual
+                                currentImageUrl: item['imageUrl'] ??
+                                    '', // URL da imagem atual
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          // Lógica para deletar o post
+                          _deletePost(item['id']);
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.favorite_border),
-                  color: Colors.red,
-                  onPressed: () => _likePost(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  color: Colors.blue,
-                  onPressed: () {
-                    // Lógica para o chat
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () {
-                    // Lógica para compartilhar
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
+    );
+  }
+
+  // Função para deletar o post
+  void _deletePost(String postId) async {
+    final postRef = FirebaseDatabase.instance.ref('posts/$postId');
+    await postRef.remove();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Post deletado com sucesso!')),
     );
   }
 }
