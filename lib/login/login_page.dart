@@ -79,13 +79,13 @@ class _LoginPageState extends State<LoginPage>
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 500),
-                child: CupertinoTextField(
-                  padding: const EdgeInsets.all(15),
+                child: const CupertinoTextField(
+                  padding: EdgeInsets.all(15),
                   placeholder: "Digite o seu email",
                   placeholderStyle:
-                      const TextStyle(color: Colors.black, fontSize: 14),
-                  style: const TextStyle(color: Colors.black, fontSize: 14),
-                  decoration: const BoxDecoration(
+                      TextStyle(color: Colors.black, fontSize: 14),
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                  decoration: BoxDecoration(
                     color: Color(0xFFF7F7F7),
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
@@ -95,14 +95,14 @@ class _LoginPageState extends State<LoginPage>
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 700),
-                child: CupertinoTextField(
-                  padding: const EdgeInsets.all(15),
+                child: const CupertinoTextField(
+                  padding: EdgeInsets.all(15),
                   placeholder: "Digite a sua senha",
                   obscureText: true,
                   placeholderStyle:
-                      const TextStyle(color: Colors.black, fontSize: 14),
-                  style: const TextStyle(color: Colors.black, fontSize: 14),
-                  decoration: const BoxDecoration(
+                      TextStyle(color: Colors.black, fontSize: 14),
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                  decoration: BoxDecoration(
                     color: Color(0xFFF7F7F7),
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage>
                   width: double.infinity,
                   child: CupertinoButton(
                     padding: const EdgeInsets.all(17),
-                    color: Color(0xFF2ECC71),
+                    color: const Color(0xFF2ECC71),
                     child: const Text(
                       "Acessar",
                       style: TextStyle(
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => CreateAccount()),
+                            builder: (context) => const CreateAccount()),
                       );
                     },
                     child: const Text(

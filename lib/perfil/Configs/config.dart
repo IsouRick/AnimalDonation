@@ -16,8 +16,8 @@ class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
   final TextEditingController _bioController = TextEditingController();
 
   Future<void> _pickProfileImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
     );
 
@@ -39,13 +39,13 @@ class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configurações'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.teal,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const PerfilPage()), // Navegar para a tela de perfil
+              MaterialPageRoute(builder: (context) => const PerfilPage()),
             );
           },
         ),
@@ -60,6 +60,10 @@ class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveSettings,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.teal,
+              ),
               child: const Text('Salvar Configurações'),
             ),
           ],
@@ -80,6 +84,10 @@ class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: _pickProfileImage,
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white, 
+            backgroundColor: Colors.teal,
+          ),
           child: const Text('Alterar Foto de Perfil'),
         ),
       ],
@@ -92,23 +100,39 @@ class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
       children: [
         const Text(
           'Nome',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.teal,
+          ),
         ),
         TextField(
           controller: _nameController,
           decoration: const InputDecoration(
             hintText: 'Digite seu nome',
+            hintStyle: TextStyle(color: Colors.grey),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal),
+            ),
           ),
         ),
         const SizedBox(height: 10),
         const Text(
           'Biografia',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.teal,
+          ),
         ),
         TextField(
           controller: _bioController,
           decoration: const InputDecoration(
             hintText: 'Escreva algo sobre você',
+            hintStyle: TextStyle(color: Colors.grey),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.teal),
+            ),
           ),
           maxLines: 4,
         ),

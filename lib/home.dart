@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Importação do Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 import 'perfil/perfil.dart';
 import 'package:flutter/services.dart';
 
@@ -38,10 +38,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
     _showComponentsWithDelay();
@@ -83,8 +81,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(
                     Icons.warning,
                     color: Colors.red,
@@ -182,29 +180,29 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.teal.shade100,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
   }
 
- AppBar _buildAppBar() {
-  return AppBar(
-    backgroundColor: Colors.white,
-    elevation: 0,
-    title: Row(
-      children: [
-        Text(
-          'Sweet Home',
-          style: GoogleFonts.lobster(
-            textStyle: const TextStyle(
-              color: Colors.black,
-              fontSize: 24,
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.teal,
+      elevation: 0,
+      title: Row(
+        children: [
+          Text(
+            'Sweet Home',
+            style: GoogleFonts.lobster(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
@@ -212,10 +210,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PerfilPage()),
+                MaterialPageRoute(builder: (context) => const PerfilPage()),
               );
             },
-            child: CircleAvatar(
+            child: const CircleAvatar(
               backgroundImage: AssetImage('assets/images/profile.jpg'),
               radius: 20,
             ),
@@ -225,7 +223,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  // Função para construir o corpo da página
   Widget _buildBody() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -233,7 +230,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       child: SlideTransition(
         position: _slideAnimation,
         child: Column(
+          
           children: [
+            
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
@@ -250,7 +249,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  // Função para construir um item do feed
   Widget _buildFeedItem(Map<String, dynamic> item, int index) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -267,6 +265,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
                 const Spacer(),
@@ -282,7 +281,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       child: Text('Reportar'),
                     ),
                   ],
-                  icon: const Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert, color: Colors.black),
                 ),
               ],
             ),
@@ -301,6 +300,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   '${item['likes']} curtidas',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -337,11 +337,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 class ChatPage extends StatelessWidget {
   final String ownerName;
 
-  ChatPage({required this.ownerName});
+  const ChatPage({super.key, required this.ownerName});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(title: Text("Chat com $ownerName")),
       body: Center(child: Text("Chat com $ownerName")),
     );

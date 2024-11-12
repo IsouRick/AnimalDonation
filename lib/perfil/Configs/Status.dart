@@ -1,13 +1,10 @@
-// Status.dart
 import 'package:flutter/material.dart';
 
 class StatusPage extends StatelessWidget {
   const StatusPage({super.key});
 
-  // Função que simula o status da conta. Ajuste conforme a lógica do seu aplicativo.
   bool _isAccountActive() {
-    // Simulação do status da conta; altere conforme necessário.
-    return true; // Defina como false para simular uma conta desativada.
+    return true;
   }
 
   @override
@@ -19,7 +16,7 @@ class StatusPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/perfilPage');
           },
         ),
       ),
