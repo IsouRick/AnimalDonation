@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:doacao_animal/perfil/Configs/config.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,11 +11,11 @@ class PerfilPage extends StatefulWidget {
 
 class _PerfilPageState extends State<PerfilPage> {
   File? _profileImage;
+  final TextEditingController _customReportController = TextEditingController();
 
-  // Função para escolher a imagem de perfil
   Future<void> _pickProfileImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
     );
 
@@ -36,7 +35,7 @@ class _PerfilPageState extends State<PerfilPage> {
           const SizedBox(height: 20),
           _buildProfileStats(),
           const SizedBox(height: 20),
-          _buildAnimalRegisterButton(), // Botão de cadastrar animal
+          _buildAnimalRegisterButton(),
           const SizedBox(height: 20),
           _buildPostsSection(),
         ],
@@ -47,11 +46,16 @@ class _PerfilPageState extends State<PerfilPage> {
   Widget _buildProfileHeader() {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 60,
-          backgroundImage: _profileImage != null
-              ? FileImage(_profileImage!)
-              : const AssetImage('assets/images/profile.jpg') as ImageProvider,
+        GestureDetector(
+          onTap:
+              _pickProfileImage, 
+          child: CircleAvatar(
+            radius: 60,
+            backgroundImage: _profileImage != null
+                ? FileImage(_profileImage!)
+                : const AssetImage('assets/images/profile.jpg')
+                    as ImageProvider,
+          ),
         ),
         const SizedBox(height: 10),
         const Text(
@@ -59,6 +63,7 @@ class _PerfilPageState extends State<PerfilPage> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: Colors.teal,
           ),
         ),
         const SizedBox(height: 5),
@@ -66,7 +71,7 @@ class _PerfilPageState extends State<PerfilPage> {
           '@usuario1',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey,
+            color: Colors.black,
           ),
         ),
       ],
@@ -94,6 +99,7 @@ class _PerfilPageState extends State<PerfilPage> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 5),
@@ -101,20 +107,22 @@ class _PerfilPageState extends State<PerfilPage> {
           label,
           style: const TextStyle(
             fontSize: 14,
-            color: Colors.grey,
+            color: Colors.black,
           ),
         ),
       ],
     );
   }
 
-  // Botão de Cadastrar Animal
   Widget _buildAnimalRegisterButton() {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context,
-            '/registerAnimal'); // Redireciona para a página de cadastro de animais
+        Navigator.pushNamed(context, '/perfilPage');
       },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+      ),
       child: const Text('Cadastrar Animal'),
     );
   }
@@ -128,6 +136,7 @@ class _PerfilPageState extends State<PerfilPage> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: Colors.teal,
           ),
         ),
         const SizedBox(height: 10),
@@ -144,6 +153,7 @@ class _PerfilPageState extends State<PerfilPage> {
         _showPostPreviewDialog(imagePath);
       },
       child: Card(
+        color: Colors.teal.shade50,
         elevation: 3,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,14 +175,18 @@ class _PerfilPageState extends State<PerfilPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Pré-Visualização do Post'),
+          backgroundColor: Colors.white,
+          title: const Text(
+            'Pré-Visualização do Post',
+            style: TextStyle(color: Colors.teal),
+          ),
           content: Image.asset(imagePath),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Fechar'),
+              child: const Text('Fechar', style: TextStyle(color: Colors.teal)),
             ),
           ],
         );
@@ -183,14 +197,14 @@ class _PerfilPageState extends State<PerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.teal,
         elevation: 0,
         title: const Text(
           'Perfil',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
@@ -199,7 +213,7 @@ class _PerfilPageState extends State<PerfilPage> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Colors.black,
+            color: Colors.white,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -209,134 +223,63 @@ class _PerfilPageState extends State<PerfilPage> {
           PopupMenuButton<int>(
             icon: const Icon(
               Icons.menu,
-              color: Colors.black,
+              color: Colors.white,
             ),
+            iconSize: 24.0, 
             onSelected: (item) {
               switch (item) {
                 case 0:
-                  _showRegisteredAnimalsPage();
+                  Navigator.pushNamed(context, '/registeredAnimals');
                   break;
                 case 1:
-                  _showMessagesDialog();
+                  Navigator.pushNamed(context, '/configuracao');
                   break;
                 case 2:
-                  _showAccountStatusDialog();
-
-                  break;
-                case 3:
-                  _showPrivacyCenterDialog();
-
-                  break;
-                case 4:
-                  _showSettingsDialog();
-
-                  break;
-                case 5:
-                  _showBlockedDialog();
-
-                  break;
-                case 6:
-                  _showHelpDialog();
-
-                  break;
-                case 7:
                   _showLogoutDialog();
-
-                  break;
-                case 8:
-                  _showAboutDialog();
                   break;
               }
             },
             itemBuilder: (context) => [
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 0,
-                child: Row(
-                  children: const [
-                    Icon(Icons.pets, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Animais Cadastrados'),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 6.0), 
+                  child: Row(
+                    children: [
+                      Icon(Icons.pets, color: Colors.brown),
+                      SizedBox(width: 10),
+                      Text('Animais Cadastrados'),
+                    ],
+                  ),
                 ),
               ),
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 1,
-                child: Row(
-                  children: const [
-                    Icon(Icons.message, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Mensagens'),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 6.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.settings, color: Colors.black),
+                      SizedBox(width: 10),
+                      Text('Configurações'),
+                    ],
+                  ),
                 ),
               ),
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 2,
-                child: Row(
-                  children: const [
-                    Icon(Icons.account_circle, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Status da Conta'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 3,
-                child: Row(
-                  children: const [
-                    Icon(Icons.security, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Central de Privacidade'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 4,
-                child: Row(
-                  children: const [
-                    Icon(Icons.settings, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Configurações'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 5,
-                child: Row(
-                  children: const [
-                    Icon(Icons.block, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Bloqueados'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 6,
-                child: Row(
-                  children: const [
-                    Icon(Icons.help, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Ajuda'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 7,
-                child: Row(
-                  children: const [
-                    Icon(Icons.exit_to_app, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Logout'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 8,
-                child: Row(
-                  children: const [
-                    Icon(Icons.info, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Sobre'),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 6.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.exit_to_app, color: Colors.red),
+                      SizedBox(width: 10),
+                      Text('Logout'),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -345,17 +288,6 @@ class _PerfilPageState extends State<PerfilPage> {
       ),
       body: _buildProfileBody(),
     );
-  }
-
-  void _showSettingsDialog() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => ConfiguracaoPage()),
-    );
-  }
-
-  void _showHelpDialog() {
-    Navigator.pushNamed(context, '/help');
   }
 
   void _showLogoutDialog() {
@@ -374,8 +306,11 @@ class _PerfilPageState extends State<PerfilPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(
-                    context, '/login'); // Redireciona para a tela de login
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
               },
               child: const Text('Sair'),
             ),
@@ -383,29 +318,5 @@ class _PerfilPageState extends State<PerfilPage> {
         );
       },
     );
-  }
-
-  void _showPrivacyCenterDialog() {
-    Navigator.pushNamed(context, '/PrivacyCenterPage');
-  }
-
-  void _showAccountStatusDialog() {
-    Navigator.pushNamed(context, '/status');
-  }
-
-  void _showBlockedDialog() {
-    Navigator.pushNamed(context, '/blocked');
-  }
-
-  void _showAboutDialog() {
-    Navigator.pushNamed(context, '/about');
-  }
-
-  void _showMessagesDialog() {
-    Navigator.pushNamed(context, '/messages');
-  }
-
-  void _showRegisteredAnimalsPage() {
-    Navigator.pushNamed(context, '/registeredAnimals');
   }
 }

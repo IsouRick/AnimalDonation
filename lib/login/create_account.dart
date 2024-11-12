@@ -88,18 +88,18 @@ class _CreateAccountState extends State<CreateAccount>
                     AnimatedOpacity(
                       opacity: _isVisible ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 500),
-                      child: CupertinoTextField(
-                        padding: const EdgeInsets.all(15),
+                      child: const CupertinoTextField(
+                        padding: EdgeInsets.all(15),
                         placeholder: "Nome da Familia",
-                        placeholderStyle: const TextStyle(
+                        placeholderStyle: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Color.fromARGB(255, 246, 210, 103),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
@@ -109,18 +109,18 @@ class _CreateAccountState extends State<CreateAccount>
                     AnimatedOpacity(
                       opacity: _isVisible ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 500),
-                      child: CupertinoTextField(
-                        padding: const EdgeInsets.all(15),
+                      child: const CupertinoTextField(
+                        padding: EdgeInsets.all(15),
                         placeholder: "Telefone",
-                        placeholderStyle: const TextStyle(
+                        placeholderStyle: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Color.fromARGB(255, 246, 210, 103),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
@@ -130,18 +130,18 @@ class _CreateAccountState extends State<CreateAccount>
                     AnimatedOpacity(
                       opacity: _isVisible ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 500),
-                      child: CupertinoTextField(
-                        padding: const EdgeInsets.all(15),
+                      child: const CupertinoTextField(
+                        padding: EdgeInsets.all(15),
                         placeholder: "Cidade",
-                        placeholderStyle: const TextStyle(
+                        placeholderStyle: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Color.fromARGB(255, 246, 210, 103),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
@@ -151,18 +151,18 @@ class _CreateAccountState extends State<CreateAccount>
                     AnimatedOpacity(
                       opacity: _isVisible ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 500),
-                      child: CupertinoTextField(
-                        padding: const EdgeInsets.all(15),
+                      child: const CupertinoTextField(
+                        padding: EdgeInsets.all(15),
                         placeholder: "Descrição",
-                        placeholderStyle: const TextStyle(
+                        placeholderStyle: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black, 
                           fontSize: 14,
                         ),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Color.fromARGB(255, 246, 210, 103),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
