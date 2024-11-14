@@ -11,7 +11,8 @@ class ConfigPage extends StatefulWidget {
 
 class _ConfigPageState extends State<ConfigPage> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _profilePictureUrlController = TextEditingController();
+  final TextEditingController _profilePictureUrlController =
+      TextEditingController();
 
   String _username = '';
   String _profilePictureUrl = '';
@@ -25,7 +26,8 @@ class _ConfigPageState extends State<ConfigPage> {
   Future<void> _fetchUserData() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
-      final snapshot = await FirebaseDatabase.instance.ref('users/$userId').get();
+      final snapshot =
+          await FirebaseDatabase.instance.ref('users/$userId').get();
       if (snapshot.exists) {
         final data = snapshot.value as Map<dynamic, dynamic>;
         setState(() {
@@ -59,7 +61,9 @@ class _ConfigPageState extends State<ConfigPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         title: const Text("Configurações"),
         centerTitle: true,
         actions: [

@@ -135,6 +135,7 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       backgroundColor: Colors.teal,
       elevation: 0,
+      automaticallyImplyLeading: false,
       title: Row(
         children: [
           Text(

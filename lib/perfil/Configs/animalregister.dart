@@ -53,7 +53,8 @@ class _AnimalRegistrationPageState extends State<AnimalRegistrationPage> {
       } catch (e) {
         print("Erro ao cadastrar animal: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao cadastrar animal. Tente novamente.')),
+          const SnackBar(
+              content: Text('Erro ao cadastrar animal. Tente novamente.')),
         );
       }
     }
@@ -62,10 +63,13 @@ class _AnimalRegistrationPageState extends State<AnimalRegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         title: const Text('Cadastro de Animal'),
         centerTitle: true,
         actions: [
+          
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: _registerAnimal,
@@ -82,9 +86,8 @@ class _AnimalRegistrationPageState extends State<AnimalRegistrationPage> {
               CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.teal,
-                backgroundImage: _imageUrl.isEmpty
-                    ? null
-                    : NetworkImage(_imageUrl),
+                backgroundImage:
+                    _imageUrl.isEmpty ? null : NetworkImage(_imageUrl),
                 child: _imageUrl.isEmpty
                     ? const Icon(Icons.pets, size: 60, color: Colors.white)
                     : null,

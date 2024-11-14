@@ -54,7 +54,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Criar Novo Post')),
+      backgroundColor: Colors.teal.shade50,  // Cor de fundo mais suave
+      appBar: AppBar(
+        title: const Text('Criar Novo Post'),
+        backgroundColor: Colors.teal.shade700,  // Tom mais forte para o AppBar
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -63,18 +67,31 @@ class _CreatePostPageState extends State<CreatePostPage> {
               controller: _imageController,
               decoration: const InputDecoration(
                 labelText: 'URL da Imagem',
+                labelStyle: TextStyle(color: Colors.black),  // Cor da label
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),  // Cor da borda
+                ),
               ),
             ),
+            const SizedBox(height: 10),
             TextField(
               controller: _descriptionController,
               decoration: const InputDecoration(
                 labelText: 'Descrição',
+                labelStyle: TextStyle(color: Colors.black),  // Cor da label
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),  // Cor da borda
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _savePost,
               child: const Text('Salvar Post'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, 
+                backgroundColor: Colors.teal.shade600,  // Cor do texto
+              ),
             ),
           ],
         ),
