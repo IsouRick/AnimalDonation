@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_page.dart'; // Certifique-se de importar sua página de login
-import 'edit_post_page.dart'; 
+import 'edit_post_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'perfil/perfil.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -130,9 +132,87 @@ class _HomePageState extends State<HomePage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.teal,
       elevation: 0,
+      title: Row(
+        children: [
+          Text(
+            'Sweet Home',
+            style: GoogleFonts.lobster(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: FutureBuilder(
+            future: _getUserProfilePicture(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 20,
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.teal,
+                  ),
+                );
+              } else if (snapshot.hasData && snapshot.data != null) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PerfilPage()),
+                    );
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(snapshot.data!),
+                    radius: 20,
+                  ),
+                );
+              } else {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PerfilPage()),
+                    );
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 20,
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.teal,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+// Função para obter a URL da foto de perfil do usuário
+  Future<String?> _getUserProfilePicture() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final userRef = FirebaseDatabase.instance.ref('users/$userId');
+      final snapshot = await userRef.get();
+      if (snapshot.exists) {
+        return (snapshot.value as Map<dynamic, dynamic>)['profilePictureUrl'];
+      }
+    }
+    return null; // Retorna nulo se não houver URL de foto de perfil
   }
 
   Widget _buildBody() {

@@ -146,8 +146,6 @@ class _CreateAccountState extends State<CreateAccount>
                         String email = _emailController.text;
                         String password = _passwordController.text;
                         String name = _nameController.text;
-                        String city = _cityController.text;
-                        String description = _descriptionController.text;
 
                         // Chama o método de criação de usuário
                         String result = await _authservice.createUser(

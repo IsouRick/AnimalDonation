@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'dart:async';
-import 'home.dart'; // Importando o HomePage
-import 'create_post.dart'; // Importando o CreatePostPage
+import 'home.dart';
+import 'create_post.dart';
+import 'login_page.dart'; // Importando a página de login
 import 'package:firebase_database/firebase_database.dart';
+import 'perfil/Configs/config.dart'; 
 
 final databaseRef = FirebaseDatabase.instance.refFromURL('https://sweet-1a3e7-default-rtdb.firebaseio.com');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializando o Firebase
   await runZonedGuarded(() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -39,7 +39,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(), // Rota principal (HomePage)
         '/create-post': (context) => const CreatePostPage(), // Rota para criar post
+        '/login': (context) => const LoginPage(), // Rota de login
+        '/configuracao': (context) => ConfigPage(), // Defina a rota aqui
       },
+      initialRoute: '/login', // Definindo a rota inicial como LoginPage
     );
   }
 }
