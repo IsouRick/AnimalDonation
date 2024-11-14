@@ -7,6 +7,7 @@ import 'create_post.dart';
 import 'login_page.dart'; // Importando a página de login
 import 'package:firebase_database/firebase_database.dart';
 import 'perfil/Configs/config.dart'; 
+import 'perfil/Configs/animalregister.dart'; 
 
 final databaseRef = FirebaseDatabase.instance.refFromURL('https://sweet-1a3e7-default-rtdb.firebaseio.com');
 Future<void> main() async {
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/create-post': (context) => const CreatePostPage(), // Rota para criar post
         '/login': (context) => const LoginPage(), // Rota de login
         '/configuracao': (context) => ConfigPage(), // Defina a rota aqui
+        '/animalregister': (context) => AnimalRegistrationPage(),
       },
       initialRoute: '/login', // Definindo a rota inicial como LoginPage
     );

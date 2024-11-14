@@ -200,7 +200,7 @@ class _PerfilPageState extends State<PerfilPage> {
   Widget _buildAnimalRegisterButton() {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context, '/perfilPage');
+        Navigator.pushNamed(context, '/animalregister');
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.teal,
@@ -245,7 +245,7 @@ class _PerfilPageState extends State<PerfilPage> {
             onSelected: (item) {
               switch (item) {
                 case 0:
-                  Navigator.pushNamed(context, '/registeredAnimals');
+                  Navigator.pushNamed(context, '/animalregister');
                   break;
                 case 1:
                   Navigator.pushNamed(context, '/configuracao');

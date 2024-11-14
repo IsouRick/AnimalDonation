@@ -5,6 +5,7 @@ import 'login_page.dart'; // Certifique-se de importar sua página de login
 import 'edit_post_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'perfil/perfil.dart';
+import 'perfil/user_profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -226,6 +227,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Exibe o item do feed
+  // Exibe o item do feed
   Widget _buildFeedItem(Map<String, dynamic> item, int index) {
     return FutureBuilder<String>(
       future: _getUserName(item['userId']), // Obter o nome do usuário
@@ -249,12 +251,34 @@ class _HomePageState extends State<HomePage> {
               // Exibindo o nome do usuário no topo da postagem
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  userName, // Aqui exibe o nome do usuário
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      userName, // Aqui exibe o nome do usuário
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // Se o usuário atual não for o dono da postagem, exibe o ícone de olho
+                    if (!isOwner) ...[
+                      IconButton(
+                        icon: const Icon(Icons.remove_red_eye),
+                        onPressed: () {
+                          // Navegar para a página do usuário
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UserPage(
+                                userId: item[
+                                    'userId'], // Passando o userId da postagem
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ]
+                  ],
                 ),
               ),
               // Exibe a imagem
@@ -314,13 +338,6 @@ class _HomePageState extends State<HomePage> {
                       icon: const Icon(Icons.favorite_border),
                       color: Colors.red,
                       onPressed: () => _likePost(index),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.chat_bubble_outline),
-                      color: Colors.blue,
-                      onPressed: () {
-                        // Lógica para o chat
-                      },
                     ),
                     // Condicional para exibir as opções de editar e deletar
                     if (isOwner) ...[
