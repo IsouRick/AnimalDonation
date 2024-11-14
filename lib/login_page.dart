@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'create_account.dart';
 import 'home.dart';
 
@@ -11,11 +12,12 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   bool _isVisible = false;
-  bool _isLoading = false; // Para indicar se o login está em progresso
+  bool _isLoading = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -28,7 +30,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       vsync: this,
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+    _slideAnimation = Tween<Offset>(
+            begin: const Offset(0, 0.5), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
@@ -110,11 +113,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Login"),
-        elevation: 0,
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
       ),
-      backgroundColor: const Color(0xFF3498DB),
+      backgroundColor: Colors.teal.shade100,
       body: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(27),
@@ -126,12 +128,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               const SizedBox(height: 30),
               FadeTransition(
                 opacity: _controller,
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                child: Text(
+                  "Sweet Home",
+                  style: GoogleFonts.lobster(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -143,7 +147,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   controller: _emailController,
                   padding: const EdgeInsets.all(15),
                   placeholder: "Digite o seu email",
-                  placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                  placeholderStyle:
+                      const TextStyle(color: Colors.black, fontSize: 14),
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
@@ -160,7 +165,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   padding: const EdgeInsets.all(15),
                   placeholder: "Digite a sua senha",
                   obscureText: true,
-                  placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                  placeholderStyle:
+                      const TextStyle(color: Colors.black, fontSize: 14),
                   style: const TextStyle(color: Colors.black, fontSize: 14),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
@@ -169,24 +175,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.center,
-                child: AnimatedOpacity(
-                  opacity: _isVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 900),
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Esqueceu sua senha?",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+              
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 1000),
@@ -194,8 +183,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   width: double.infinity,
                   child: CupertinoButton(
                     padding: const EdgeInsets.all(17),
-                    color: const Color(0xFF2ECC71),
-                    onPressed: _isLoading ? null : _loginUser, // Desabilita o botão durante o login
+                    color: Colors.teal,
+                    onPressed: _isLoading
+                        ? null
+                        : _loginUser, // Desabilita o botão durante o login
                     child: _isLoading
                         ? const CircularProgressIndicator(
                             color: Colors.black,
@@ -203,7 +194,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         : const Text(
                             "Acessar",
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -221,7 +212,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CreateAccount()),
+                        MaterialPageRoute(
+                            builder: (context) => const CreateAccount()),
                       );
                     },
                     child: const Text(

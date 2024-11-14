@@ -32,7 +32,8 @@ class _CreateAccountState extends State<CreateAccount>
       vsync: this,
     );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero)
+    _slideAnimation = Tween<Offset>(
+            begin: const Offset(-1, 0), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.forward();
@@ -63,7 +64,7 @@ class _CreateAccountState extends State<CreateAccount>
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      backgroundColor: const Color(0xFF3498DB),
+      backgroundColor: Colors.teal.shade200,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -100,10 +101,12 @@ class _CreateAccountState extends State<CreateAccount>
                         controller: _emailController,
                         padding: const EdgeInsets.all(15),
                         placeholder: "E-mail",
-                        placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
-                        style: const TextStyle(color: Colors.black, fontSize: 14),
+                        placeholderStyle:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 246, 210, 103),
+                          color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                       ),
@@ -116,10 +119,12 @@ class _CreateAccountState extends State<CreateAccount>
                         controller: _passwordController,
                         padding: const EdgeInsets.all(15),
                         placeholder: "Senha",
-                        placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
-                        style: const TextStyle(color: Colors.black, fontSize: 14),
+                        placeholderStyle:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 246, 210, 103),
+                          color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                       ),
@@ -132,10 +137,12 @@ class _CreateAccountState extends State<CreateAccount>
                         controller: _nameController,
                         padding: const EdgeInsets.all(15),
                         placeholder: "Nome",
-                        placeholderStyle: const TextStyle(color: Colors.black, fontSize: 14),
-                        style: const TextStyle(color: Colors.black, fontSize: 14),
+                        placeholderStyle:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
                         decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 246, 210, 103),
+                          color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                       ),
@@ -160,7 +167,7 @@ class _CreateAccountState extends State<CreateAccount>
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2ECC71),
+                        backgroundColor: Colors.teal,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'animal_detail_page.dart';
+
+List<Map<String, dynamic>> userAnimals = [];
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -18,6 +21,7 @@ class _PerfilPageState extends State<PerfilPage> {
     super.initState();
     _fetchUsername();
     _fetchUserPosts();
+    _fetchUserAnimals();
   }
 
   Future<String?> _fetchProfilePictureUrl() async {
@@ -31,6 +35,32 @@ class _PerfilPageState extends State<PerfilPage> {
       }
     }
     return null;
+  }
+
+  Future<void> _fetchUserAnimals() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      try {
+        // Vamos pegar todos os animais e verificar o userId de cada um
+        final snapshot = await FirebaseDatabase.instance.ref("animals").get();
+
+        if (snapshot.exists) {
+          final animalsData = snapshot.value as Map<dynamic, dynamic>;
+          setState(() {
+            userAnimals = animalsData.values
+                .where((animal) => animal['userId'] == userId)
+                .map((animal) => Map<String, dynamic>.from(animal))
+                .toList();
+          });
+        } else {
+          print('Nenhum dado encontrado para esse usuário.');
+        }
+      } catch (e) {
+        print('Erro ao buscar animais: $e');
+      }
+    } else {
+      print('Usuário não autenticado');
+    }
   }
 
   Future<void> _fetchUsername() async {
@@ -85,6 +115,8 @@ class _PerfilPageState extends State<PerfilPage> {
           const SizedBox(height: 20),
           _buildAnimalRegisterButton(),
           const SizedBox(height: 20),
+          _buildAnimalsList(), // Exibe o grid dos animais
+          const SizedBox(height: 20),
           _buildPostsGrid(),
         ],
       ),
@@ -129,6 +161,64 @@ class _PerfilPageState extends State<PerfilPage> {
         ),
       ],
     );
+  }
+
+  Widget _buildAnimalsList() {
+    return userAnimals.isEmpty
+        ? const Center(child: Text("Nenhum animal cadastrado."))
+        : GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, // 3 animais por linha
+              crossAxisSpacing: 8.0, // Menor espaçamento entre as colunas
+              mainAxisSpacing: 8.0, // Menor espaçamento entre as linhas
+              childAspectRatio: 0.8, // Ajuste do tamanho do card
+            ),
+            itemCount: userAnimals.length,
+            itemBuilder: (context, index) {
+              final animal = userAnimals[index];
+              return GestureDetector(
+                onTap: () {
+                  // Navegar para a página de detalhes do animal
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AnimalDetailPage(animal: animal),
+                    ),
+                  );
+                },
+                child: Card(
+                  elevation: 4.0, // Menos sombra no card
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(8.0), // Bordas arredondadas
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Imagem do animal
+                      animal['imageUrl'] != null
+                          ? CircleAvatar(
+                              radius: 35.0, // Tamanho da imagem
+                              backgroundImage: NetworkImage(animal['imageUrl']),
+                            )
+                          : const Icon(Icons.pets,
+                              size: 40.0), // Ícone padrão se não tiver imagem
+                      const SizedBox(height: 8.0),
+                      // Nome do animal
+                      Text(
+                        animal['name'] ?? 'Nome desconhecido',
+                        style: const TextStyle(
+                            fontSize: 14.0, fontWeight: FontWeight.bold),
+                      ),
+                      // Botão de excluir animal
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
   }
 
   Widget _buildPostsGrid() {
