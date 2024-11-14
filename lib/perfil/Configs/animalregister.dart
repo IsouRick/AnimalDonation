@@ -1,189 +1,156 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class RegisterAnimal extends StatefulWidget {
-  const RegisterAnimal({super.key});
+class AnimalRegistrationPage extends StatefulWidget {
+  const AnimalRegistrationPage({super.key});
 
   @override
-  _RegisterAnimalState createState() => _RegisterAnimalState();
+  _AnimalRegistrationPageState createState() => _AnimalRegistrationPageState();
 }
 
-class _RegisterAnimalState extends State<RegisterAnimal> {
-  final _formKey = GlobalKey<FormState>();
-  File? _animalImage;
+class _AnimalRegistrationPageState extends State<AnimalRegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _sexController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _breedController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
 
-  Future<void> _pickAnimalImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+  String _imageUrl = '';
 
-    if (pickedFile != null) {
-      setState(() {
-        _animalImage = File(pickedFile.path);
-      });
+  Future<void> _registerAnimal() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final animalRef = FirebaseDatabase.instance.ref('animals').push();
+      try {
+        await animalRef.set({
+          'name': _nameController.text,
+          'location': _locationController.text,
+          'description': _descriptionController.text,
+          'sex': _sexController.text,
+          'type': _typeController.text,
+          'breed': _breedController.text,
+          'imageUrl': _imageUrlController.text,
+          'userId': userId,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Animal cadastrado com sucesso!')),
+        );
+        _nameController.clear();
+        _locationController.clear();
+        _descriptionController.clear();
+        _sexController.clear();
+        _typeController.clear();
+        _breedController.clear();
+        _imageUrlController.clear();
+        setState(() {
+          _imageUrl = '';
+        });
+      } catch (e) {
+        print("Erro ao cadastrar animal: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Erro ao cadastrar animal. Tente novamente.')),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(
         backgroundColor: Colors.teal,
-        elevation: 0,
-        title: const Text(
-          'Cadastrar Animal',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
+        title: const Text('Cadastro de Animal'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+        actions: [
+          
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _registerAnimal,
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        ],
       ),
-      body: Container(
-        color: Colors.teal.shade50,
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _pickAnimalImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: _animalImage != null
-                        ? FileImage(_animalImage!)
-                        : const AssetImage('assets/images/logo.png')
-                            as ImageProvider,
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.teal,
+                backgroundImage:
+                    _imageUrl.isEmpty ? null : NetworkImage(_imageUrl),
+                child: _imageUrl.isEmpty
+                    ? const Icon(Icons.pets, size: 60, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome do Animal',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome do Animal',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira o nome do animal';
-                    }
-                    return null;
-                  },
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _locationController,
+                decoration: const InputDecoration(
+                  labelText: 'Localidade',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _typeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo (Ex: Cão, Gato, etc.)',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira o tipo de animal';
-                    }
-                    return null;
-                  },
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _breedController,
-                  decoration: const InputDecoration(
-                    labelText: 'Raça',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira a raça do animal';
-                    }
-                    return null;
-                  },
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _sexController,
+                decoration: const InputDecoration(
+                  labelText: 'Sexo (Macho/Fêmea)',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _ageController,
-                  decoration: const InputDecoration(
-                    labelText: 'Idade (em anos)',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira a idade do animal';
-                    }
-                    return null;
-                  },
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _typeController,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo (Cachorro, Gato, etc.)',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Descrição (opcional)',
-                    labelStyle: TextStyle(color: Colors.teal),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
-                    ),
-                  ),
-                  maxLines: 4,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _breedController,
+                decoration: const InputDecoration(
+                  labelText: 'Raça',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 30),
-
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Animal Cadastrado!')),
-                      );
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('Cadastrar Animal'),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'URL da Imagem',
+                  border: OutlineInputBorder(),
                 ),
-              ],
-            ),
+                onChanged: (url) {
+                  setState(() {
+                    _imageUrl = url;
+                  });
+                },
+              ),
+            ],
           ),
         ),
       ),

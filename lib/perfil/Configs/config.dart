@@ -1,142 +1,114 @@
-import 'dart:io';
-import 'package:doacao_animal/perfil/perfil.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class ConfiguracaoPage extends StatefulWidget {
-  const ConfiguracaoPage({super.key});
+class ConfigPage extends StatefulWidget {
+  const ConfigPage({super.key});
 
   @override
-  _ConfiguracaoPageState createState() => _ConfiguracaoPageState();
+  _ConfigPageState createState() => _ConfigPageState();
 }
 
-class _ConfiguracaoPageState extends State<ConfiguracaoPage> {
-  File? _profileImage;
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _bioController = TextEditingController();
+class _ConfigPageState extends State<ConfigPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _profilePictureUrlController =
+      TextEditingController();
 
-  Future<void> _pickProfileImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+  String _username = '';
+  String _profilePictureUrl = '';
 
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path);
-      });
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final snapshot =
+          await FirebaseDatabase.instance.ref('users/$userId').get();
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        setState(() {
+          _username = data['username'] ?? 'Usuário sem nome';
+          _profilePictureUrl = data['profilePictureUrl'] ?? '';
+          _usernameController.text = _username;
+          _profilePictureUrlController.text = _profilePictureUrl;
+        });
+      }
     }
   }
 
-  void _saveSettings() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Configurações salvas com sucesso!')),
-    );
+  Future<void> _updateUserData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      try {
+        await FirebaseDatabase.instance.ref('users/$userId').update({
+          'username': _usernameController.text,
+          'profilePictureUrl': _profilePictureUrlController.text,
+        });
+        setState(() {
+          _username = _usernameController.text;
+          _profilePictureUrl = _profilePictureUrlController.text;
+        });
+      } catch (e) {
+        print("Error updating user data: $e");
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.teal.shade100,
       appBar: AppBar(
-        title: const Text('Configurações'),
         backgroundColor: Colors.teal,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const PerfilPage()),
-            );
-          },
-        ),
+        title: const Text("Configurações"),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _updateUserData,
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildProfileHeader(),
-            const SizedBox(height: 20),
-            _buildProfileForm(),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveSettings,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 60,
                 backgroundColor: Colors.teal,
+                backgroundImage: _profilePictureUrl.isEmpty
+                    ? null
+                    : NetworkImage(_profilePictureUrl),
+                child: _profilePictureUrl.isEmpty
+                    ? const Icon(Icons.person, color: Colors.white)
+                    : null,
               ),
-              child: const Text('Salvar Configurações'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: "Nome de Usuário",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _profilePictureUrlController,
+                decoration: const InputDecoration(
+                  labelText: "URL da Foto de Perfil",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildProfileHeader() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 60,
-          backgroundImage: _profileImage != null
-              ? FileImage(_profileImage!)
-              : const AssetImage('assets/images/profile.jpg') as ImageProvider,
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: _pickProfileImage,
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, 
-            backgroundColor: Colors.teal,
-          ),
-          child: const Text('Alterar Foto de Perfil'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProfileForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Nome',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.teal,
-          ),
-        ),
-        TextField(
-          controller: _nameController,
-          decoration: const InputDecoration(
-            hintText: 'Digite seu nome',
-            hintStyle: TextStyle(color: Colors.grey),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.teal),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        const Text(
-          'Biografia',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.teal,
-          ),
-        ),
-        TextField(
-          controller: _bioController,
-          decoration: const InputDecoration(
-            hintText: 'Escreva algo sobre você',
-            hintStyle: TextStyle(color: Colors.grey),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.teal),
-            ),
-          ),
-          maxLines: 4,
-        ),
-      ],
     );
   }
 }

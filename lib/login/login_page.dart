@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'create_account.dart';
-import '../home.dart';
+import '../home/home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,6 +17,10 @@ class _LoginPageState extends State<LoginPage>
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   bool _isVisible = false;
+  bool _isLoading = false;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -42,7 +48,60 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     _controller.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'Usuário não encontrado. Verifique seu email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Senha incorreta. Tente novamente.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'O email fornecido é inválido.';
+      } else {
+        errorMessage = 'Erro desconhecido: ${e.message}';
+      }
+
+      _showErrorDialog(errorMessage);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Erro de Login"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -50,11 +109,10 @@ class _LoginPageState extends State<LoginPage>
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Login - trocar por imagem"),
-        elevation: 0,
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
       ),
-      backgroundColor: const Color(0xFF3498DB),
+      backgroundColor: Colors.teal.shade100,
       body: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(27),
@@ -66,12 +124,14 @@ class _LoginPageState extends State<LoginPage>
               const SizedBox(height: 30),
               FadeTransition(
                 opacity: _controller,
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                child: Text(
+                  "Sweet Home",
+                  style: GoogleFonts.lobster(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -79,13 +139,14 @@ class _LoginPageState extends State<LoginPage>
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 500),
-                child: const CupertinoTextField(
-                  padding: EdgeInsets.all(15),
+                child: CupertinoTextField(
+                  controller: _emailController,
+                  padding: const EdgeInsets.all(15),
                   placeholder: "Digite o seu email",
                   placeholderStyle:
-                      TextStyle(color: Colors.black, fontSize: 14),
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                  decoration: BoxDecoration(
+                      const TextStyle(color: Colors.black, fontSize: 14),
+                  style: const TextStyle(color: Colors.black, fontSize: 14),
+                  decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
@@ -95,38 +156,22 @@ class _LoginPageState extends State<LoginPage>
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 700),
-                child: const CupertinoTextField(
-                  padding: EdgeInsets.all(15),
+                child: CupertinoTextField(
+                  controller: _passwordController,
+                  padding: const EdgeInsets.all(15),
                   placeholder: "Digite a sua senha",
                   obscureText: true,
                   placeholderStyle:
-                      TextStyle(color: Colors.black, fontSize: 14),
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                  decoration: BoxDecoration(
+                      const TextStyle(color: Colors.black, fontSize: 14),
+                  style: const TextStyle(color: Colors.black, fontSize: 14),
+                  decoration: const BoxDecoration(
                     color: Color(0xFFF7F7F7),
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.center,
-                child: AnimatedOpacity(
-                  opacity: _isVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 900),
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Esqueceu sua senha?",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+              
               AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 1000),
@@ -134,22 +179,22 @@ class _LoginPageState extends State<LoginPage>
                   width: double.infinity,
                   child: CupertinoButton(
                     padding: const EdgeInsets.all(17),
-                    color: const Color(0xFF2ECC71),
-                    child: const Text(
-                      "Acessar",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                      );
-                    },
+                    color: Colors.teal,
+                    onPressed: _isLoading
+                        ? null
+                        : _loginUser,
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.black,
+                          )
+                        : const Text(
+                            "Acessar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ),
